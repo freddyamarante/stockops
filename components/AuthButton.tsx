@@ -1,5 +1,6 @@
 import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
+import { Button } from './ui/button'
 import { cookies } from 'next/headers'
 
 export default async function AuthButton() {
@@ -14,17 +15,19 @@ export default async function AuthButton() {
     <div className="flex items-center gap-4">
       Hey, {user.email}!
       <form action="/auth/sign-out" method="post">
-        <button className="py-2 px-4 rounded-md no-underline bg-btn-background hover:bg-btn-background-hover">
+        <Button variant="destructive" size="sm">
           Logout
-        </button>
+        </Button>
       </form>
     </div>
   ) : (
-    <Link
-      href="/login"
-      className="py-2 px-3 flex rounded-md no-underline bg-btn-background hover:bg-btn-background-hover"
-    >
-      Login
-    </Link>
+    <div className="flex justify-center space-x-4">
+      <Button asChild variant="outline">
+        <Link href="/login">Login</Link>
+      </Button>
+      <Button asChild>
+        <Link href="/register">Register</Link>
+      </Button>
+    </div>
   )
 }

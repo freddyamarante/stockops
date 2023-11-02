@@ -1,8 +1,15 @@
+import { cn } from '@/utils/utils'
 import './globals.css'
+import { Inter as FontSans } from 'next/font/google'
+
+export const fontSans = FontSans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+})
 
 export const metadata = {
-  title: 'Next.js and Supabase Starter Kit',
-  description: 'The fastest way to build apps with Next.js and Supabase',
+  title: 'StockOps',
+  description: 'The easiest way to manage your inventory!',
 }
 
 export default function RootLayout({
@@ -11,8 +18,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en">
-      <body className="bg-background text-foreground">
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={cn('bg-background text-foreground dark', fontSans.variable)}
+      >
         <main className="min-h-screen flex flex-col items-center">
           {children}
         </main>

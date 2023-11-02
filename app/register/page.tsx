@@ -1,9 +1,9 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { ChevronLeft } from 'lucide-react'
-import LoginForm from '@/components/LoginForm'
+import RegisterForm from '@/components/RegisterForm'
 
-export default function Login() {
+export default function Register() {
   return (
     <div className="flex-1 flex flex-col w-full px-4 sm:max-w-lg justify-center gap-2">
       <Button
@@ -17,7 +17,7 @@ export default function Login() {
         </Link>
       </Button>
 
-      <LoginForm />
+      <RegisterForm />
     </div>
   )
 }
