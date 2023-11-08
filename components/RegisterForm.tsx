@@ -79,6 +79,8 @@ export default function RegisterForm() {
     const ci = values.ci
     const address = values.address
 
+    const url = window.location.origin
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -89,7 +91,7 @@ export default function RegisterForm() {
           ci,
           address,
         },
-        emailRedirectTo: `${process.env.HOST}/auth/callback`,
+        emailRedirectTo: `${url}/auth/callback`,
       },
     })
 
