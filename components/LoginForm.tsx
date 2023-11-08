@@ -4,7 +4,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
 import { useRouter } from 'next/navigation'
-import { NextResponse } from 'next/server'
 
 import { Button } from './ui/button'
 import {
@@ -17,26 +16,45 @@ import {
 } from '@/components/ui/form'
 import { Input } from '@/components/ui/input'
 import Messages from '@/app/login/messages'
+import { createClient } from '@/utils/supabase/client'
 
-const loginFormSchema = z.object({
+const signInFormSchema = z.object({
   email: z.string().email({ message: 'Please enter a valid email' }),
   password: z.string().min(1, { message: 'Please enter your password' }),
 })
 
 export default function LoginForm() {
-  const form = useForm<z.infer<typeof loginFormSchema>>({
-    resolver: zodResolver(loginFormSchema),
+  const router = useRouter()
+  const supabase = createClient()
+
+  const form = useForm<z.infer<typeof signInFormSchema>>({
+    resolver: zodResolver(signInFormSchema),
     defaultValues: {
       email: '',
       password: '',
     },
   })
 
+  const signIn = async (values: z.infer<typeof signInFormSchema>) => {
+    const email = values.email
+    const password = values.password
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+
+    if (error) {
+      router.push('/login?message=Could not authenticate user')
+    } else {
+      router.push('/')
+    }
+  }
+
   return (
     <Form {...form}>
       <form
-        action="/auth/sign-in"
-        method="post"
+        onSubmit={form.handleSubmit(signIn)}
         className="flex-1 flex flex-col w-full justify-center gap-2 text-foreground"
       >
         <FormField

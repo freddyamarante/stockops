@@ -3,6 +3,8 @@
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm } from 'react-hook-form'
 import * as z from 'zod'
+import { useRouter } from 'next/navigation'
+import { createClient } from '@/utils/supabase/client'
 
 import { Button } from './ui/button'
 import {
@@ -16,7 +18,7 @@ import {
 import { Textarea } from './ui/textarea'
 import { Input } from '@/components/ui/input'
 
-const registerFormSchema = z
+const signUpFormSchema = z
   .object({
     first_name: z
       .string()
@@ -53,8 +55,11 @@ const registerFormSchema = z
   })
 
 export default function RegisterForm() {
-  const form = useForm<z.infer<typeof registerFormSchema>>({
-    resolver: zodResolver(registerFormSchema),
+  const router = useRouter()
+  const supabase = createClient()
+
+  const form = useForm<z.infer<typeof signUpFormSchema>>({
+    resolver: zodResolver(signUpFormSchema),
     defaultValues: {
       first_name: '',
       last_name: '',
@@ -66,11 +71,39 @@ export default function RegisterForm() {
     },
   })
 
+  const signUp = async (values: z.infer<typeof signUpFormSchema>) => {
+    const email = values.email
+    const password = values.password
+    const firstName = values.first_name
+    const lastName = values.last_name
+    const ci = values.ci
+    const address = values.address
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          ci,
+          address,
+        },
+        emailRedirectTo: `${process.env.HOST}/auth/callback`,
+      },
+    })
+
+    if (error) {
+      router.push('/login?message=Could not authenticate the user')
+    } else {
+      router.push('/login?message=Check email to continue sign in process')
+    }
+  }
+
   return (
     <Form {...form}>
       <form
-        action="/auth/sign-up"
-        method="post"
+        onSubmit={form.handleSubmit(signUp)}
         className="grid grid-cols-2 w-full justify-center gap-2 text-foreground items-end"
       >
         <FormField

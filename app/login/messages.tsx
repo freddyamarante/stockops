@@ -2,21 +2,30 @@
 
 import { useSearchParams } from 'next/navigation'
 
+import { AlertCircle, Terminal } from 'lucide-react'
+
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
+
 export default function Messages() {
   const searchParams = useSearchParams()
   const error = searchParams.get('error')
   const message = searchParams.get('message')
+
   return (
     <>
       {error && (
-        <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-          {error}
-        </p>
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>{error}</AlertDescription>
+        </Alert>
       )}
       {message && (
-        <p className="mt-4 p-4 bg-foreground/10 text-foreground text-center">
-          {message}
-        </p>
+        <Alert>
+          <Terminal className="h-4 w-4" />
+          <AlertTitle>Message</AlertTitle>
+          <AlertDescription>{message}</AlertDescription>
+        </Alert>
       )}
     </>
   )
