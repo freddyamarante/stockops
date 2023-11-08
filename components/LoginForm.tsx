@@ -45,7 +45,7 @@ export default function LoginForm() {
     })
 
     if (error) {
-      router.push('/login?message=Could not authenticate user')
+      router.push('/login?error=Could not authenticate user')
     } else {
       router.push('/')
     }

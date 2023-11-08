@@ -96,7 +96,7 @@ export default function RegisterForm() {
     })
 
     if (error) {
-      router.push('/login?message=Could not authenticate the user')
+      router.push('/login?error=Could not authenticate the user')
     } else {
       router.push('/login?message=Check email to continue sign in process')
     }
