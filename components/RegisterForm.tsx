@@ -71,34 +71,52 @@ export default function RegisterForm() {
     },
   })
 
-  const signUp = async (values: z.infer<typeof signUpFormSchema>) => {
-    const email = values.email
-    const password = values.password
-    const firstName = values.first_name
-    const lastName = values.last_name
-    const ci = values.ci
-    const address = values.address
-
-    const url = window.location.origin
-
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          ci,
-          address,
-        },
-        emailRedirectTo: `${url}/auth/callback`,
-      },
-    })
+  const checkEmailExists = async (email: string) => {
+    const { data, error } = await supabase
+      .from('Users')
+      .select('email')
+      .ilike('email', email)
 
     if (error) {
-      router.push('/login?error=Could not authenticate the user')
+      return false
+    }
+
+    return data && data.length > 0
+  }
+
+  const signUp = async (values: z.infer<typeof signUpFormSchema>) => {
+    const { email, password, first_name, last_name, ci, address } = values
+    const url = window.location.origin
+
+    const emailExists = await checkEmailExists(email)
+
+    if (emailExists) {
+      router.push('/login?error=Email is already registered')
     } else {
-      router.push('/login?message=Check email to continue sign in process')
+      const { error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          data: {
+            email,
+            first_name,
+            last_name,
+            ci,
+            address,
+          },
+          emailRedirectTo: `${url}/auth/callback`,
+        },
+      })
+
+      if (error) {
+        if (error.message.includes('Users_ci_key')) {
+          router.push('/login?error=C.I number is already registered')
+        } else {
+          router.push(`/login?error=Registration failed: ${error.message}`)
+        }
+      } else {
+        router.push('/login?message=Check email to continue sign in process')
+      }
     }
   }
 
